@@ -1,8 +1,7 @@
-from gl import Renderer
+from gl import Render
 
-rend = Renderer(512, 512)
-
-rend.glClearColor(1,0,0)
-
+rend = Render()
+rend.glCreateWindow(500, 500)
+rend.glViewPort(7, 7, 500, 500)
 
 rend.glFinish('output.bmp')
