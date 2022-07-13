@@ -27,7 +27,8 @@ class Render(object):
         self.viewPortY = 0
         self.height = 0
         self.width = 0
-        self.clearColor = color(1, 1, 1)
+        self.clearColor = color(0, 0, 0)
+        self.currColor = color(1, 1, 1)
         self.glClear()
 
     def glCreateWindow(self, width, height):
