@@ -58,11 +58,14 @@ def mainMenu():
         "Ingrese cualquiera de las siguientes opciones: \n[1] Requisitos basicos\n[2] Extra"
     )
     opcion = int(input(">> "))
+
     if opcion == 1:
         requisito()
     elif opcion == 2:
         print("Sequencia infinita iniciada, examinar archivo BMP")
         extra()
+    else:
+        print('Error: Caracter desconocido dentro de las opciones.')
 
 
 mainMenu()
