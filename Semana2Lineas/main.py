@@ -1,6 +1,8 @@
+
 from pip import main
-from gl import Render, color
+from gl import Render, color, V2
 import time
+
 width = 512
 height = 512
 
@@ -70,13 +72,21 @@ def mainMenu():
 
 #mainMenu()
 
-m =  1
-b = int(height/2)
+# m =  1
+# b = int(height/2)
 
-for x in range(width):
-    y = m * x + b
-    y = int(y)
-    rend.glPoint(x, y)
+# for x in range(width):
+#     y = m * x + b
+#     y = int(y)
+#     rend.glPoint(x, y)
+
+v0 = V2(width/2,height / 2)
+
+for y in range(0, height, 50):
+    rend.glLine(v0, V2(width, y))
+
+
+
 
 rend.glFinish("output.bmp")
 
