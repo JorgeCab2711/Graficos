@@ -3,8 +3,8 @@ from pip import main
 from gl import Render, color, V2
 import time
 
-width = 512
-height = 512
+width = 1920
+height = 1080
 
 
 rend = Render()
@@ -42,7 +42,6 @@ def extra():
         time.sleep(0.25)
         rend.glFinish('output.bmp')
 
-
 def requisito():
     # Punto esquina superior derecha
     rend.glViewPortPoint(0.9999, 0.9999, color(1, 0, 0))
@@ -53,7 +52,6 @@ def requisito():
 
     rend.glFinish('output.bmp')
     print("Archivo BMP generado")
-
 
 def mainMenu():
     print(
@@ -80,10 +78,21 @@ def mainMenu():
 #     y = int(y)
 #     rend.glPoint(x, y)
 
-v0 = V2(width/2,height / 2)
+v0 = V2(width/2 , height/2)
 
-for y in range(0, height, 50):
-    rend.glLine(v0, V2(width, y))
+dy = height / 100
+dX = width / 100
+
+x = 0
+y = height
+
+for i in range(100):
+    rend.glLine(V2(x,0), V2(0,y))
+    rend.glLine(V2(width,height), V2(width,y))
+    rend.glLine(V2(x,height), V2(width,y))
+
+    x += dX
+    y -= dy
 
 
 
