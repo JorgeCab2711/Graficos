@@ -1,4 +1,4 @@
-from re import X
+import time
 from gl import Render, color, V2
 
 
@@ -18,34 +18,29 @@ def drawPolygon(polygon, clr =  None):
         for i in range(len(polygon)):
             rend.glLine(polygon[i], polygon[(i - 1) % len(polygon)], clr)
         
-        for idx, (x, y) in enumerate(polygon):
-            polygon[idx] = (x-1, y-1)
-
-
-
-    
-    
-
-
-
 
 poligon = [(165, 380),(185, 360), (180, 330), (207, 345), (233, 330), (230, 360), (250, 380), (220, 385), (205, 410), (193, 383)]
 
-def restarATupla(tupla):
-    greater = int(0)
-    if tupla[0] > tupla[1]:
-        greater = tupla[0]
-    else:
-        greater = tupla[1]
-
-    print(greater)
-
-tupla = (1,2)
-restarATupla(tupla)
-
-
 #drawPolygon(poligon, color(1, 0, 0))
 
+# x0 = 0
+# y0 = 0
+# x1 = width
+# y1 = 0
+
+# color_one = color(1, 0, 0)
+
+# for i in range(width):
+#     if y0 < height:
+#         rend.glLine(V2(x0,y0), V2(x1, y1), color_one)
+#         y0 += 1
+#         y1 += 1
+#         print("works")
+#         #time.sleep(0.5)
+#     else:
+#         pass
 
 
+
+    
 rend.glFinish("output.bmp")

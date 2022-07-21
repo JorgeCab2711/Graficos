@@ -99,6 +99,7 @@ class Render(object):
     def glPoint(self, x, y, clr=None):
         if (0 <= x < self.width) and (0 <= y < self.height):
             self.pixels[x][y] = clr or self.currColor
+        
 
     # Funcion para crear un viewport dentro de la matrix
     def glViewPort(self, posX, posY, width, height):
