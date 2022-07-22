@@ -1,8 +1,14 @@
+from email.policy import default
+from fnmatch import translate
 import struct
 from collections import namedtuple
 from obj import Obj
+import numpy as np
 
-V2 = namedtuple('V2', ['x', 'y'])
+
+V2 = namedtuple('point2', ['x', 'y'])
+V3 = namedtuple('Point3', ['x', 'y', 'z'])
+V4 = namedtuple('Point4', ['x', 'y', 'z', 'w'])
 
 
 def char(c):
@@ -124,7 +130,7 @@ class Render(object):
 
     def glLine(self, v0, v1, clr=None):
         # Bresenham's algorithm
-        #y = m* x + b
+        # y = m* x + b
         x0 = int(v0.x)
         x1 = int(v1.x)
         y0 = int(v0.y)
@@ -177,14 +183,40 @@ class Render(object):
                     y -= 1
                 limit += 1
 
+    def glCreateObjectMatrix(self, translate=V3(0, 0, 0), rotate=V3(0, 0, 0), scale=V3(1, 1, 1)):
+        translate = np.matrix(
+            [[1, 0, 0, translate.x],
+             [0, 1, 0, translate.y],
+             [0, 0, 1, translate.z],
+             [0, 0, 0, 1]])
+
+        rotation = np.identity(4)
+
+        scaleMatrix = np.matrix(
+            [[scale.x, 0, 0, 0],
+             [0, scale.y, 0, 0],
+             [0, 0, scale.z, 0],
+             [0, 0, 0, 1]])
+
+        return translate * rotation * scaleMatrix
+
+    def glTransformMatrix(self, vertex, matrix):
+        v = V4(vertex.x, vertex.y, vertex.z)
+
+        vt = matrix * v
+
+        vf = V3(vt[0] / vt[3], vt[1] / vt[3], vt[2] / vt[3])
+
     def glLoadModel(self, filename):
         model = Obj(filename)
-
+        modelMatrix = self.glCreateObjectMatrix(translate, rotate, scale)
         for face in model.faces:
             for vert in range(len(face)):
                 vertCount = len(face)
-                v0 = model.vertices[[vert][0] - 1]
+                v0 = model.vertices[face[vert][0] - 1]
                 v1 = model.vertices[face[(vert+1) % vertCount][0] - 1]
 
-                v0 = V2(v0[0], v0[1])
-                v1 = V2(v1[0], v1[1])
+                v0 = self.glTransformMatrix(v0, modelMatrix)
+                v1 = self.glTransformMatrix(v1, modelMatrix)
+
+                self.glLine(V2(v0.x, v0.y), V2(v1.x, v0.y))
