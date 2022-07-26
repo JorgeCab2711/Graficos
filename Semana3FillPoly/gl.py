@@ -115,7 +115,7 @@ class Render(object):
         self.viewPortHeight = height
 
     # Funcion para crear un punto dentro de los limites del punto con coordenadas normalizadas
-    def glViewPortPoint(self, normX, normY, clr=None):
+    def glViewPortPoint(self, normX, normY, colorName=None):
         # Verifica la posicion del punto llegando a 0.9999 por alguna razon cuando es 1 se sale del viewport
         if normX > 0.9999 or normX < -0.9999 or normY > 0.9999 or normY < -0.9999:
             print('Warning, coordinates out of viewport range.')
@@ -126,7 +126,7 @@ class Render(object):
             x = int(x)
             y = int(y)
 
-            self.glPoint(x, y, clr)
+            self.glPoint(x, y, self.simpleColor(colorName))
 
     def glLine(self, v0, v1, clr=None):
         # Bresenham's algorithm
@@ -183,52 +183,54 @@ class Render(object):
                     y -= 1
                 limit += 1
 
-    def scanFillpoligonoly(self):
-        y = 0
-        x = 0
-        isInside = False
-        backgroundColor = self.getPointColor(self.width-1, self.height-1)
-        drawColor = bytes(backgroundColor)
-
-        while y < self.height-1:
-            self.glPoint(x, y, drawColor)
-            currentPointColor = self.getPointColor(x, y)
-            nextPointColor = self.getPointColor(x+1, y)
-
-            x += 1
-            # If the color on the next pixel is not the Background color
-            # then it starts to draw the color from that pixel
-            if nextPointColor != backgroundColor and isInside == False:
-                drawColor = bytes(nextPointColor)
-                isInside = True
-                print('Drawing inside')
-
-            elif nextPointColor == currentPointColor and isInside == True:
-                drawColor = bytes(backgroundColor)
-                print('Not drawing')
-                isInside = False
-
-            # elif nextPointColor == currentPointColor:
-            #     drawColor = bytes(currentPointColor)
-            #     print('Drawing same color')
-            #     isInside = True
-
-            if x == self.width-1:
-                x = 0
-                y += 1
-
+    # Funcion to check if the point is within the polygon
     def pointInside(self, x, y, poligono):
-        inside = False
-        x0, y0 = poligono[0]
+        isInside = False
         n = len(poligono)
-        for i in range(n+1):
-            x2, y2 = poligono[i % n]
+        x0, y0 = poligono[0]
+        for j in range(n+1):
+            x2, y2 = poligono[j % n]
             if y > min(y0, y2):
                 if y <= max(y0, y2):
                     if x <= max(x0, x2):
-                        if y0 != y2:
+                        if y0 is not y2:
                             inX = (y-y0)*(x2-x0)/(y2-y0)+x0
                         if x0 == x2 or x <= inX:
-                            inside = not inside
+                            isInside = not isInside
             x0, y0 = x2, y2
-        return inside
+        return isInside
+
+    # Function to fill any polygon
+    def scanFillpoly(self, poligono, fillColorName):
+        for x in range(self.width):
+            for y in range(self.height):
+                if self.pointInside(x, y, poligono):
+                    self.glPoint(x, y, self.simpleColor(
+                        fillColorName) or color(1, 0, 0))
+
+    # Funtion to draw a poligon
+    def drawPolygon(self, polygon, colorName=None):
+        for i in range(100):
+            for idx, (x, y) in enumerate(polygon):
+                polygon[idx] = V2(x, y)
+
+        for i in range(len(polygon)):
+            self.glLine(polygon[i], polygon[(i - 1) %
+                        len(polygon)], self.simpleColor(colorName))
+
+    # Function that returns a color value using a color name
+
+    def simpleColor(self, name):
+        if name == 'black':
+            return color(1, 1, 1)
+        elif name == 'white':
+            return color(0, 0, 0)
+        elif name == 'red':
+            return color(1, 0, 0)
+        elif name == 'blue':
+            return color(0, 0, 1)
+        elif name == "green":
+            return color(0, 1, 0)
+
+        else:
+            print('error: unknown color')
