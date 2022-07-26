@@ -183,7 +183,7 @@ class Render(object):
                     y -= 1
                 limit += 1
 
-    def scanFillPolly(self):
+    def scanFillpoligonoly(self):
         y = 0
         x = 0
         isInside = False
@@ -217,17 +217,18 @@ class Render(object):
                 x = 0
                 y += 1
 
-
-# x0 = 0
-# y0 = 0
-# x1 = width
-# y1 = 0
-# color_one = color(1, 0, 0)
-# for i in range(width):
-#     if y0 < height/2:
-#         rend.glLine(V2(x0, y0), V2(x1, y1), color_one)
-#         y0 += 1
-#         y1 += 1
-
-#     else:
-#         pass
+    def pointInside(self, x, y, poligono):
+        inside = False
+        x0, y0 = poligono[0]
+        n = len(poligono)
+        for i in range(n+1):
+            x2, y2 = poligono[i % n]
+            if y > min(y0, y2):
+                if y <= max(y0, y2):
+                    if x <= max(x0, x2):
+                        if y0 != y2:
+                            inX = (y-y0)*(x2-x0)/(y2-y0)+x0
+                        if x0 == x2 or x <= inX:
+                            inside = not inside
+            x0, y0 = x2, y2
+        return inside
