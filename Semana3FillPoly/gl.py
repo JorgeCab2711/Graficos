@@ -1,5 +1,7 @@
 import struct
 from collections import namedtuple
+import time
+from turtle import back, clear, width
 
 
 V2 = namedtuple('V2', ['x', 'y'])
@@ -38,6 +40,7 @@ class Render(object):
         self.glClear()
 
     # Funcion para crear una ventana definiendo su alto y ancho
+
     def glCreateWindow(self, width, height):
         self.width = width
         self.height = height
@@ -92,6 +95,7 @@ class Render(object):
         self.glClear()
 
     # Funcion para cambiar el color del fondo
+
     def glColor(self, r, g, b):
         self.currColor = color(r, g, b)
 
@@ -99,9 +103,13 @@ class Render(object):
     def glPoint(self, x, y, clr=None):
         if (0 <= x < self.width) and (0 <= y < self.height):
             self.pixels[x][y] = clr or self.currColor
-        
+
+    # Funcion que retorna el color de un pixel en especifico
+    def getPointColor(self, x, y):
+        return [self.pixels[x][y][0], self.pixels[x][y][1], self.pixels[x][y][2]]
 
     # Funcion para crear un viewport dentro de la matrix
+
     def glViewPort(self, posX, posY, width, height):
         self.viewPortX = posX
         self.viewPortY = posY
@@ -122,21 +130,19 @@ class Render(object):
 
             self.glPoint(x, y, clr)
 
-
-    
     def glLine(self, v0, v1, clr=None):
-        #Bresenham's algorithm
+        # Bresenham's algorithm
         #y = m* x + b
         x0 = int(v0.x)
         x1 = int(v1.x)
         y0 = int(v0.y)
         y1 = int(v1.y)
-        
-        # Si el punto cero es igual al putno uno entonces 
+
+        # Si el punto cero es igual al putno uno entonces
         if x0 == x1 and y0 == y1:
             self.glPoint(x0, y0, clr)
             return
-        
+
         dy = abs(y1 - y0)
         dx = abs(x1 - x0)
 
@@ -144,13 +150,12 @@ class Render(object):
         # se intercambian las x por las y y se dibuja la linea de manera vertical
         steep = dy > dx
 
-
         # si el punto inicial x es mayor que el punto final x
         # se intercambian los puntos para siempre dibujar de izquierda a derecha
         if steep:
             x0, y0 = y0, x0
             x1, y1 = y1, x1
-        
+
         if x0 > x1:
             x0, x1 = x1, x0
             y0, y1 = y1, y0
@@ -163,16 +168,16 @@ class Render(object):
         m = dy/dx
         y = y0
 
-        for x in range(x0, x1 +1):
+        for x in range(x0, x1 + 1):
             if steep:
-                #dibujar de manera vertical
+                # dibujar de manera vertical
                 self.glPoint(y, x, clr)
             else:
-                #dibujarlo horizontal
-                self.glPoint(x,y,clr)
+                # dibujarlo horizontal
+                self.glPoint(x, y, clr)
 
             offset += m
-            
+
             if offset >= limit:
                 if y0 < y1:
                     y += 1
@@ -180,5 +185,38 @@ class Render(object):
                     y -= 1
                 limit += 1
 
+    def scanFillPolly(self):
+        y = 0
+        x = 0
+        drawColor = color(1, 1, 1)
+        while y < self.height:
+            self.glPoint(x, y, drawColor)
+            nextPointColor = self.getPointColor(x+1, y)
+            self.glFinish('output.bmp')
+            x += 1
 
-        
+            if nextPointColor == self.clearColor:
+                print('next: ', nextPointColor, '|| back', [
+                    self.clearColor[0],
+                    self.clearColor[1],
+                    self.clearColor[2]])
+                drawColor = bytes(nextPointColor)
+
+            if x == self.width:
+                x = 0
+                y += 1
+
+
+# x0 = 0
+# y0 = 0
+# x1 = width
+# y1 = 0
+# color_one = color(1, 0, 0)
+# for i in range(width):
+#     if y0 < height/2:
+#         rend.glLine(V2(x0, y0), V2(x1, y1), color_one)
+#         y0 += 1
+#         y1 += 1
+
+#     else:
+#         pass
