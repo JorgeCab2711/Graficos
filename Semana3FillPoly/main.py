@@ -25,9 +25,11 @@ poligon = [(165, 380), (185, 360), (180, 330), (207, 345), (233, 330),
 
 drawPolygon(poligon, color(1, 0, 0))
 rend.glPoint(100, 0, color(1, 0, 0))
+rend.glPoint(150, 0, color(1, 0, 0))
 
-
+rend.glFinish("output.bmp")
+time.sleep(2)
 rend.scanFillPolly()
 
 
-# rend.glFinish("output.bmp")
+rend.glFinish("output.bmp")

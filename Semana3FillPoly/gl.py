@@ -1,7 +1,5 @@
 import struct
 from collections import namedtuple
-import time
-from turtle import back, clear, width
 
 
 V2 = namedtuple('V2', ['x', 'y'])
@@ -132,7 +130,7 @@ class Render(object):
 
     def glLine(self, v0, v1, clr=None):
         # Bresenham's algorithm
-        #y = m* x + b
+        # y = m* x + b
         x0 = int(v0.x)
         x1 = int(v1.x)
         y0 = int(v0.y)
@@ -188,21 +186,34 @@ class Render(object):
     def scanFillPolly(self):
         y = 0
         x = 0
-        drawColor = color(1, 1, 1)
-        while y < self.height:
+        isInside = False
+        backgroundColor = self.getPointColor(self.width-1, self.height-1)
+        drawColor = bytes(backgroundColor)
+
+        while y < self.height-1:
             self.glPoint(x, y, drawColor)
+            currentPointColor = self.getPointColor(x, y)
             nextPointColor = self.getPointColor(x+1, y)
-            self.glFinish('output.bmp')
+
             x += 1
-
-            if nextPointColor == self.clearColor:
-                print('next: ', nextPointColor, '|| back', [
-                    self.clearColor[0],
-                    self.clearColor[1],
-                    self.clearColor[2]])
+            # If the color on the next pixel is not the Background color
+            # then it starts to draw the color from that pixel
+            if nextPointColor != backgroundColor and isInside == False:
                 drawColor = bytes(nextPointColor)
+                isInside = True
+                print('Drawing inside')
 
-            if x == self.width:
+            elif nextPointColor == currentPointColor and isInside == True:
+                drawColor = bytes(backgroundColor)
+                print('Not drawing')
+                isInside = False
+
+            # elif nextPointColor == currentPointColor:
+            #     drawColor = bytes(currentPointColor)
+            #     print('Drawing same color')
+            #     isInside = True
+
+            if x == self.width-1:
                 x = 0
                 y += 1
 
