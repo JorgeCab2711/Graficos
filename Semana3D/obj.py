@@ -4,25 +4,27 @@ class Obj(object):
             self.lines = file.read().splitlines()
 
         self.vertices = []
-        self.textcoords = []
         self.normals = []
+        self.texcoords = []
         self.faces = []
 
+        self.read()
+
+    def read(self):
         for line in self.lines:
-            try:
+            if line and (line[0] == 'v' or line[0] == 'f'):
                 prefix, value = line.split(' ', 1)
-            except:
-                continue
 
-            if prefix == 'v':
-                self.vertices.append(list(map(float, value.split(' '))))
-            elif prefix == 'vt':
-                self.textcoords.append(list(map(float, value.split(' '))))
-            elif prefix == 'vn':
-                self.normals.append(list(map(float, value.split(' '))))
-            elif prefix == 'f':
-                self.faces.append([vert.split('/')
-                                  for vert in value.split(' ')])
-
-        for face in self.faces:
-            print(face)
+                # Split the vertices
+                if prefix == 'v':
+                    self.vertices.append(list(map(float, value.split(' '))))
+                # Split the normals
+                elif prefix == 'vn':
+                    self.normals.append(list(map(float, value.split(' '))))
+                # Split the texcoords
+                elif prefix == 'vt':
+                    self.texcoords.append(list(map(float, value.split(' '))))
+                # Split the faces
+                elif prefix == 'f':
+                    self.faces.append([list(map(int, vert.split('/')))
+                                      for vert in value.split(' ')])

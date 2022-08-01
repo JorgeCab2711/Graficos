@@ -1,10 +1,9 @@
 from email.policy import default
-from fnmatch import translate
 import struct
 from collections import namedtuple
 from obj import Obj
 import numpy as np
-
+import random
 
 V2 = namedtuple('point2', ['x', 'y'])
 V3 = namedtuple('Point3', ['x', 'y', 'z'])
@@ -183,6 +182,30 @@ class Render(object):
                     y -= 1
                 limit += 1
 
+    # Funcion to check if the point is within the polygon
+    def glPointInside(self, x, y, poligono):
+        isInside = False
+        n = len(poligono)
+        x0, y0 = poligono[0]
+        for j in range(n+1):
+            x2, y2 = poligono[j % n]
+            if y > min(y0, y2):
+                if y <= max(y0, y2):
+                    if x <= max(x0, x2):
+                        if y0 is not y2:
+                            inX = (y-y0)*(x2-x0)/(y2-y0)+x0
+                        if x0 == x2 or x <= inX:
+                            isInside = not isInside
+            x0, y0 = x2, y2
+        return isInside
+
+    # Function to fill any polygon
+    def glScanFillpoly(self, poligono, clr=None):
+        for x in range(self.width):
+            for y in range(self.height):
+                if self.glPointInside(x, y, poligono):
+                    self.glPoint(x, y, clr)
+
     def glCreateObjectMatrix(self, translate=V3(0, 0, 0), rotate=V3(0, 0, 0), scale=V3(1, 1, 1)):
         translate = np.matrix(
             [[1, 0, 0, translate.x],
@@ -207,16 +230,23 @@ class Render(object):
 
         vf = V3(vt[0] / vt[3], vt[1] / vt[3], vt[2] / vt[3])
 
-    def glLoadModel(self, filename):
+    def glLoadModel(self, filename, translate, scale):
         model = Obj(filename)
-        modelMatrix = self.glCreateObjectMatrix(translate, rotate, scale)
+
         for face in model.faces:
-            for vert in range(len(face)):
-                vertCount = len(face)
+
+            vertCount = len(face)
+
+            for vert in range(vertCount):
+
                 v0 = model.vertices[face[vert][0] - 1]
-                v1 = model.vertices[face[(vert+1) % vertCount][0] - 1]
+                v1 = model.vertices[face[(vert + 1) % vertCount][0] - 1]
 
-                v0 = self.glTransformMatrix(v0, modelMatrix)
-                v1 = self.glTransformMatrix(v1, modelMatrix)
+                x0 = round((v0[0] * scale[0]) + translate[0])
+                y0 = round((v0[1] * scale[1]) + translate[1])
+                x1 = round((v1[0] * scale[0]) + translate[0])
+                y1 = round((v1[1] * scale[1]) + translate[1])
 
-                self.glLine(V2(v0.x, v0.y), V2(v1.x, v0.y))
+                self.glLine(V2(x0, y0), V2(x1, y1))
+                if self.glPointInside(x0, y0, vert):
+                    self.glScanFillpoly(vert)
