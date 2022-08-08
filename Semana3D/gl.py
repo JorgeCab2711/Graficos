@@ -248,5 +248,3 @@ class Render(object):
                 y1 = round((v1[1] * scale[1]) + translate[1])
 
                 self.glLine(V2(x0, y0), V2(x1, y1))
-                if self.glPointInside(x0, y0, vert):
-                    self.glScanFillpoly(vert)
