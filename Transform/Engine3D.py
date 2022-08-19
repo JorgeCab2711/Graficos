@@ -9,11 +9,11 @@ rend = Renderer(width, height)
 
 rend.dirLight = V3(1,0,0)
 
-rend.active_texture = Texture("Transform/models/Eye_N.bmp")
-rend.active_texture2 = Texture("Transform/models/Eye_D.bmp")
+rend.active_texture = Texture("Transform/models/Skull.bmp")
+#rend.active_texture2 = Texture("Transform/models/Eye_D.bmp")
 rend.active_shader = textureBlend
 
-rend.glLoadModel("Transform/models/eyeball.obj",
+rend.glLoadModel("Transform/models/skull.obj",
                  translate = V3(0, 0, -10),
                  scale = V3(1.5,1.5,1.5),
                  rotate = V3(0,0,0))
