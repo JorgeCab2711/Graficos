@@ -24,6 +24,13 @@ render.models = [
     Sphere(V3(0.5, -1.5, -10), 0.15, coal),
     Sphere(V3(0, -1.4, -10), 0.15, coal),
     # Botones
+    Sphere(V3(0, 0, -10), 0.15, coal),
+    Sphere(V3(0, 1, -10), 0.15, coal),
+    Sphere(V3(0, 2, -10), 0.15, coal),
+    # Bola de nieve
+    Sphere(V3(0, 3, -10), 2, snow),
+    Sphere(V3(0, 0, -10), 1.5, snow),
+    Sphere(V3(0, -2, -10), 1.3, snow),
 
 
 
